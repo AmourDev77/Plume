@@ -13,9 +13,7 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio_tungstenite::tungstenite::protocol::Message;
 
 mod security;
-mod database;
-
-use database::{commande};
+// mod database;
 
 type Tx = UnboundedSender<Message>;
 type PeerMap = Arc<Mutex<HashMap<SocketAddr, Tx>>>;
@@ -78,7 +76,7 @@ async fn handle_connection(peer_map: PeerMap, raw_stream: TcpStream, addr: Socke
                 // If we get the key then register it in the array
                 keys_map.lock().unwrap().insert(addr, split_msg[1].to_string());
 
-                let message = Message::text(format!("Successfully logged in using the following key :\n{}", split_msg[1]));
+                let message = Message::text(format!("announcement__Successfully logged in using the following key :\n{}", split_msg[1])); // TODO: THink how to properly return the messages from the relay
 
                 if let Some(peer) = peers.iter().find(|(ip_addr, _)| ip_addr == &&addr) {
                     let (_, websocker_peer) = peer;
@@ -111,6 +109,10 @@ async fn handle_connection(peer_map: PeerMap, raw_stream: TcpStream, addr: Socke
             "friend_request" => {
                 let message = Message::text("Request friend received");
                 if let Some(peer) = peers.iter().find(|(ip_addr, _)| ip_addr == &&addr) {
+                    // TODO: 
+                    // 1 retrieve the address from the payload 
+                    // 2 Find the connexion associated with the address
+                    // 3 send the payload if a connexion is found
                     let (_, websocker_peer) = peer;
                     websocker_peer.unbounded_send(message).unwrap();
                 } else {
@@ -147,7 +149,7 @@ async fn handle_connection(peer_map: PeerMap, raw_stream: TcpStream, addr: Socke
 #[tokio::main]
 async fn main() -> Result<(), IoError> {
 
-    database::commande::show_user_tables().await;
+    // database::commande::show_user_tables().await;
 
     let addr = env::args().nth(1).unwrap_or_else(|| "127.0.0.1:8081".to_string());
 

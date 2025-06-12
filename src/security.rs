@@ -1,6 +1,6 @@
-use std::{str::FromStr, usize};
+use std::str::FromStr;
 
-use ed25519_dalek::{ed25519::signature, pkcs8::DecodePublicKey, Signature, VerifyingKey};
+use ed25519_dalek::{pkcs8::DecodePublicKey, Signature, VerifyingKey};
 
 /// Verify the signature of a given packet.
 /// Remember, a packet will always follow same structure : 
