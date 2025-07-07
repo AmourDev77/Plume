@@ -107,16 +107,31 @@ async fn handle_connection(peer_map: PeerMap, raw_stream: TcpStream, addr: Socke
                 }
             },
             "friend_request" => {
-                let message = Message::text("Request friend received");
-                if let Some(peer) = peers.iter().find(|(ip_addr, _)| ip_addr == &&addr) {
-                    // TODO: 
-                    // 1 retrieve the address from the payload 
-                    // 2 Find the connexion associated with the address
-                    // 3 send the payload if a connexion is found
-                    let (_, websocker_peer) = peer;
-                    websocker_peer.unbounded_send(message).unwrap();
-                } else {
-                    println!("Unable to get the sender in the peers_map to send back connection message");
+                let mut message: Message = Message::text("announcement__error_Nothing hapened");
+                // TODO: 
+                // 1 retrieve the address from the payload 
+                // 2 Find the connexion associated with the address
+                // 3 send the payload if a connexion is found
+                let target_ed = split_msg[2];
+
+
+                // Get the target user
+                let keys_iter = keys_map.lock().unwrap(); // Here we can unwrap because the two reasons for this to error is : an other caller of the mutex panicked, to array stop, or the lock is already used in current thread, which is also not the case here
+                let target = keys_iter.iter().find(|(_, ed)| **ed == target_ed.to_string());
+                if target.is_none() {
+                    // TODO: Handle unconnected user, just log and return nothing
+                    message = Message::text("announcement__error__Target user not connected");
+                    return future::ok(());
+                }
+
+                let (target_addr, _) = target.unwrap(); // unwrap safe here because we determined that it's not null
+
+                // Verify if target user is connected
+                let sending = false;
+                if let Some((_, peer)) = peers.iter().find(|(ip_addr, _)| ip_addr == &target_addr) {
+                    // target connected, send the message
+                    message = Message::Text(split_msg.join("__").into());
+                    peer.unbounded_send(message).expect("Unable to send message to client");
                 }
             },
             _ => {
