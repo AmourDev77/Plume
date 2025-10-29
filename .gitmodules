@@ -1,0 +1,3 @@
+[submodule "plume_core"]
+	path = plume_core
+	url = https://github.com/AmourDev77/plume_core.git
