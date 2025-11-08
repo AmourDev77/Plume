@@ -1,3 +1,6 @@
 [submodule "plume_core"]
 	path = plume_core
 	url = https://github.com/AmourDev77/plume_core.git
+[submodule "Plume-cli"]
+	path = Plume-cli
+	url = https://github.com/AmourDev77/Plume-cli.git
