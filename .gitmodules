@@ -4,3 +4,6 @@
 [submodule "Plume-cli"]
 	path = Plume-cli
 	url = https://github.com/AmourDev77/Plume-cli.git
+[submodule "Plume_relay"]
+	path = Plume_relay
+	url = https://github.com/AmourDev77/Plume_relay.git
